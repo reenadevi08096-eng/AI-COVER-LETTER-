@@ -2,9 +2,8 @@ document.getElementById('coverLetterForm').addEventListener('submit', async func
     e.preventDefault();
 
     const submitBtn = document.getElementById('submitBtn');
-    const outputArea = document.getElementById('output');
+    const output = document.getElementById('output');
 
-    // Input values fetch karna
     const candidateName = document.getElementById('candidateName').value;
     const jobRole = document.getElementById('jobRole').value;
     const targetCompany = document.getElementById('targetCompany').value;
@@ -14,6 +13,7 @@ document.getElementById('coverLetterForm').addEventListener('submit', async func
     submitBtn.disabled = true;
 
     try {
+        // Relative path use kar rahe hain taaki localhost aur Vercel dono par chal sake
         const response = await fetch('/generate-cover-letter', {
             method: 'POST',
             headers: {
@@ -30,25 +30,24 @@ document.getElementById('coverLetterForm').addEventListener('submit', async func
         const data = await response.json();
 
         if (data.success) {
-            outputArea.value = data.coverLetter;
+            output.value = data.coverLetter;
         } else {
-            outputArea.value = 'Failed to generate cover letter. Please try again.';
+            output.value = 'Failed to generate cover letter. Please try again.';
         }
     } catch (error) {
         console.error('Error:', error);
-        outputArea.value = 'An error occurred while connecting to the server.';
+        output.value = 'An error occurred while generating the cover letter.';
     } finally {
         submitBtn.innerText = 'Generate Cover Letter';
         submitBtn.disabled = false;
     }
 });
 
-// Copy to Clipboard logic
+// Copy to clipboard functionality
 document.getElementById('copyBtn').addEventListener('click', function() {
-    const outputText = document.getElementById('output');
-    if (outputText.value) {
-        outputText.select();
-        navigator.clipboard.writeText(outputText.value);
-        alert('Copied to clipboard!');
+    const output = document.getElementById('output');
+    if (output.value) {
+        navigator.clipboard.writeText(output.value);
+        alert('Cover letter copied to clipboard!');
     }
 });
