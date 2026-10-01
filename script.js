@@ -1,45 +1,54 @@
-document.getElementById('coverLetterForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+document.getElementById('coverLetterForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-  const jobTitle = document.getElementById('jobTitle').value;
-  const companyName = document.getElementById('companyName').value;
-  const keySkills = document.getElementById('keySkills').value;
-  const submitBtn = document.getElementById('submitBtn');
-  const output = document.getElementById('output');
+    const submitBtn = document.getElementById('submitBtn');
+    const outputArea = document.getElementById('output');
 
-  submitBtn.disabled = true;
-  submitBtn.innerText = 'Generating...';
-  output.value = 'Generating cover letter, please wait...';
+    // Input values fetch karna
+    const candidateName = document.getElementById('candidateName').value;
+    const jobRole = document.getElementById('jobRole').value;
+    const targetCompany = document.getElementById('targetCompany').value;
+    const keySkills = document.getElementById('keySkills').value;
 
-  try {
-    const response = await fetch('http://localhost:3000/generate-cover-letter', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ jobTitle, companyName, keySkills }),
-    });
+    submitBtn.innerText = 'Generating...';
+    submitBtn.disabled = true;
 
-    const data = await response.json();
+    try {
+        const response = await fetch('http://localhost:3000/generate-cover-letter', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                candidateName,
+                jobRole,
+                targetCompany,
+                keySkills
+            })
+        });
 
-    if (response.ok) {
-      output.value = data.coverLetter || data.result || 'Cover letter generated successfully!';
-    } else {
-      output.value = `Error: ${data.error || 'Failed to generate cover letter.'}`;
+        const data = await response.json();
+
+        if (data.success) {
+            outputArea.value = data.coverLetter;
+        } else {
+            outputArea.value = 'Failed to generate cover letter. Please try again.';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        outputArea.value = 'An error occurred while connecting to the server.';
+    } finally {
+        submitBtn.innerText = 'Generate Cover Letter';
+        submitBtn.disabled = false;
     }
-  } catch (error) {
-    output.value = 'Server connection failed. Make sure node server is running on port 3000.';
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerText = 'Generate Cover Letter';
-  }
 });
 
-// Copy to Clipboard Feature
-document.getElementById('copyBtn').addEventListener('click', () => {
-  const outputText = document.getElementById('output');
-  if (outputText.value && !outputText.value.startsWith('Generating') && !outputText.value.startsWith('Server connection failed')) {
-    navigator.clipboard.writeText(outputText.value);
-    alert('Cover Letter copied to clipboard!');
-  }
+// Copy to Clipboard logic
+document.getElementById('copyBtn').addEventListener('click', function() {
+    const outputText = document.getElementById('output');
+    if (outputText.value) {
+        outputText.select();
+        navigator.clipboard.writeText(outputText.value);
+        alert('Copied to clipboard!');
+    }
 });
