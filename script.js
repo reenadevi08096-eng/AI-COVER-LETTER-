@@ -14,7 +14,7 @@ document.getElementById('coverLetterForm').addEventListener('submit', async func
     submitBtn.disabled = true;
 
     try {
-        const response = await fetch('http://localhost:3000/generate-cover-letter', {
+        const response = await fetch('/generate-cover-letter', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
