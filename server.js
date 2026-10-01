@@ -7,7 +7,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // Static files serve karne ke liye
+app.use(express.static(__dirname)); 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/generate-cover-letter', (req, res) => {
     const { candidateName, jobRole, targetCompany, keySkills } = req.body;
