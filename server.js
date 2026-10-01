@@ -1,20 +1,17 @@
-const express = require('express');
-const path = require('path');
+﻿const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
 
-// 1. Root route to serve index.html on Vercel
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Main directory se static files (script.js, style.css) serve karne ke liye
+app.use(express.static(path.join(__dirname)));
 
-// 2. Cover letter generation endpoint
+// API Endpoint
 app.post('/generate-cover-letter', (req, res) => {
     const { candidateName, jobRole, targetCompany, keySkills } = req.body;
 
@@ -23,7 +20,11 @@ app.post('/generate-cover-letter', (req, res) => {
     res.json({ success: true, coverLetter });
 });
 
-// 3. Export for Vercel serverless function execution
+// Root URL par index.html serve karein
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 module.exports = app;
 
 if (require.main === module) {
