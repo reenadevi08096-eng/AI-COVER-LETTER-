@@ -8,12 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/(script.js|style.css|index.html)",
-      "dest": "/$1"
+      "src": "/generate-cover-letter",
+      "dest": "server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "/$1"
     }
   ]
 }
