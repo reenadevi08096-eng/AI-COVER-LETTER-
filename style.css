@@ -1,8 +1,4 @@
-/* Custom styles */
+/* Custom utility styles if needed */
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-textarea:focus, input:focus {
-  outline: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }

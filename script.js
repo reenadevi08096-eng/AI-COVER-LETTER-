@@ -13,8 +13,7 @@ document.getElementById('coverLetterForm').addEventListener('submit', async func
     submitBtn.disabled = true;
 
     try {
-        // Relative path use kar rahe hain taaki localhost aur Vercel dono par chal sake
-        const response = await fetch('/generate-cover-letter', {
+        const response = await fetch('/api/generate-cover-letter', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -32,7 +31,7 @@ document.getElementById('coverLetterForm').addEventListener('submit', async func
         if (data.success) {
             output.value = data.coverLetter;
         } else {
-            output.value = 'Failed to generate cover letter. Please try again.';
+            output.value = 'Failed to generate cover letter. Please check input fields.';
         }
     } catch (error) {
         console.error('Error:', error);
