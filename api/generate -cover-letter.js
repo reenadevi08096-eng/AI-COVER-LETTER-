@@ -1,45 +1,28 @@
-export default function handler(req, res) {
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, error: 'Method Not Allowed' });
-    }
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-    try {
-        const { candidateName, jobRole, targetCompany, keySkills } = req.body || {};
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-        // Input validation
-        if (!candidateName || !jobRole || !targetCompany) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Missing required fields: Name, Job Role, and Target Company are required.' 
-            });
-        }
+  const { name, targetCompany, jobRole, keySkills } = req.body;
 
-        // Clean template string for cover letter
-        const coverLetter = `Dear Hiring Manager at ${targetCompany},
+  if (!name || !targetCompany || !jobRole || !keySkills) {
+    return res.status(400).json({ error: 'Missing required parameters.' });
+  }
 
-I am writing to express my strong interest in the ${jobRole} position at ${targetCompany}. With a solid foundation in software development and a passion for building efficient web applications, I am eager to contribute to your team's success.
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-My key technical skills and expertise include:
-${keySkills ? keySkills.split(',').map(skill => `- ${skill.trim()}`).join('\n') : '- Web Development & Problem Solving'}
+    const prompt = `Write a formal, high-quality cover letter for ${name} applying for ${jobRole} at ${targetCompany}. Key skills: ${keySkills}.`;
 
-I am confident that my skills and enthusiasm make me a strong candidate for this role. I look forward to the opportunity to discuss how my background aligns with ${targetCompany}'s goals.
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
 
-Thank you for your time and consideration.
-
-Sincerely,
-${candidateName}`;
-
-        return res.status(200).json({ 
-            success: true, 
-            coverLetter 
-        });
-
-    } catch (error) {
-        return res.status(500).json({ 
-            success: false, 
-            error: 'Internal Server Error', 
-            details: error.message 
-        });
-    }
+    return res.status(200).json({ coverLetter: responseText });
+  } catch (error) {
+    console.error('Gemini API Error:', error);
+    return res.status(500).json({ error: 'Failed to generate cover letter.' });
+  }
 }
